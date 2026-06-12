@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>上传新世界 - MC世界管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+    <script src="/js/script.js"></script>
+</head>
+<body>
+<div id="header-container"></div>
+
+<div class="container">
+    <h1>📤 上传新世界</h1>
+    <form th:action="@{/maps/add}" method="post" enctype="multipart/form-data" id="uploadForm">
+        <div class="form-grid">
+            <!-- 地图名称 -->
+            <div class="form-group">
+                <label for="mapName">地图名称 *</label>
+                <input type="text" id="mapName" name="mapName" required>
+            </div>
+            <!-- 版本号 -->
+            <div class="form-group">
+                <label for="version">版本号</label>
+                <select id="version" name="version" required disabled>
+                    <option value="">正在加载版本列表...</option>
+                </select>
+            </div>
+            <!-- 来源选择 -->
+            <div class="form-group">
+                <label for="source">来源 *</label>
+                <select id="source" name="source" required>
+                    <option value="local">本地地图</option>
+                    <option value="download">下载地图</option>
+                </select>
+            </div>
+            <!-- 简介 -->
+            <div class="form-group full-width">
+                <label for="description">简介</label>
+                <textarea id="description" name="description" rows="3" placeholder="简单描述地图特色..."></textarea>
+            </div>
+            <!-- 人数 -->
+            <div class="form-group">
+                <label for="minPlayers">最少人数</label>
+                <input type="number" id="minPlayers" name="minPlayers" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="maxPlayers">最多人数</label>
+                <input type="number" id="maxPlayers" name="maxPlayers" value="10" min="1">
+            </div>
+            <!-- 文件上传 -->
+            <div class="form-group full-width">
+                <label for="zipFile">地图文件 (.zip) *</label>
+                <div class="custom-file-upload">
+                    <button type="button" class="upload-btn" id="zipFileBtn">选择文件</button>
+                    <span id="zipFileName" class="file-name">未选择任何文件</span>
+                    <input type="file" id="zipFile" name="zipFile" accept=".zip" required style="display: none;">
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label for="resourcePack">资源包 (.zip) <span class="optional">(可选)</span></label>
+                <div class="custom-file-upload">
+                    <button type="button" class="upload-btn" id="resourcePackBtn">选择文件</button>
+                    <span id="resourcePackName" class="file-name">未选择任何文件</span>
+                    <input type="file" id="resourcePack" name="resourcePack" accept=".zip" style="display: none;">
+                </div>
+            </div>
+            <!-- 关联 Mod 多选框 -->
+            <div id="modsGroup">
+                <label for="modIds">关联 Mod（可多选）<span class="optional">(可选)</span></label>
+                <div id="modIds" th:each="mo : ${allMods}">
+                    <label>
+                        <input type="checkbox" name="modIds" th:value="${mo.id}" style="margin-right: 5px;">
+                    </label>
+                    <span th:text="${mo.modName}">Mod名称</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn">上传</button>
+            <a href="/maps/" class="btn-cancel">取消</a>
+        </div>
+    </form>
+</div>
+
+<footer class="main-footer">
+    <p>© 2025 Minecraft 世界管理平台 | 使用 Spring Boot + Thymeleaf 构建</p>
+</footer>
+
+<script>
+    // 加载版本列表
+    const versionSelect = document.getElementById('version');
+    async function loadVersions() {
+        try {
+            const response = await fetch('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json');
+            const data = await response.json();
+            const releases = data.versions.filter(v => v.type === 'release');
+            releases.sort((a, b) => new Date(b.releaseTime) - new Date(a.releaseTime));
+            versionSelect.innerHTML = '';
+            if (releases.length === 0) {
+                const opt = document.createElement('option');
+                opt.textContent = '暂无版本数据';
+                opt.disabled = true;
+                versionSelect.appendChild(opt);
+            } else {
+                releases.forEach(release => {
+                    const opt = document.createElement('option');
+                    opt.value = release.id;
+                    opt.textContent = release.id;
+                    versionSelect.appendChild(opt);
+                });
+            }
+            versionSelect.disabled = false;
+        } catch (error) {
+            console.error('加载版本失败:', error);
+            versionSelect.innerHTML = '<option value="">加载失败，请刷新重试</option>';
+            versionSelect.disabled = false;
+        }
+    }
+
+    // 自定义文件上传按钮逻辑
+    function setupFileUpload(btnId, fileInputId, fileNameSpanId) {
+        const btn = document.getElementById(btnId);
+        const fileInput = document.getElementById(fileInputId);
+        const fileNameSpan = document.getElementById(fileNameSpanId);
+        if (!btn || !fileInput || !fileNameSpan) return;
+        btn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            fileNameSpan.textContent = e.target.files[0] ? e.target.files[0].name : '未选择任何文件';
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadVersions();
+        setupFileUpload('zipFileBtn', 'zipFile', 'zipFileName');
+        setupFileUpload('resourcePackBtn', 'resourcePack', 'resourcePackName');
+        // 如果初始来源为下载，则加载 Mod（但默认是 local，所以不会立即加载）
+    });
+</script>
+</body>
+</html>

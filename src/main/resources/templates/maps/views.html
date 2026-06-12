@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>地图详情 - MC世界管理</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/script.js"></script>
+</head>
+<body>
+<div id="header-container"></div>
+
+<div class="container">
+    <h1>📋 地图详情</h1>
+    <div class="detail-card">
+        <div class="detail-row">
+            <span class="detail-label">ID：</span>
+            <span th:text="${map.id}">1</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">地图名称：</span>
+            <span th:text="${map.mapName}">未知</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">版本：</span>
+            <span th:text="${map.version}">未知</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">简介：</span>
+            <span th:text="${map.description != null ? map.description : '无'}">无</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">人数范围：</span>
+            <span th:text="${map.minPlayers} + ' - ' + ${map.maxPlayers}">1-10</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">文件大小 (MB)：</span>
+            <span th:text="${#numbers.formatDecimal(map.fileSize / 1048576.0, 1, 2)}">0.00</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">上传时间：</span>
+            <span th:text="${#temporals.format(map.importTime, 'yyyy-MM-dd HH:mm:ss')}">未知</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">地图文件：</span>
+            <a th:href="@{/maps/download/{id}(id=${map.id})}" class="btn-view">下载地图 (.zip)</a>
+        </div>
+        <div th:if="${map.resourcePack != null and map.resourcePack.length > 0}" class="detail-row">
+            <span class="detail-label">资源包：</span>
+            <a th:href="@{/maps/download-resource/{id}(id=${map.id})}" class="btn-view">下载资源包</a>
+        </div>
+        <!-- 直接显示关联 Mod（无需点击按钮） -->
+        <div th:if="${map.source == 'download'}" class="detail-row">
+            <span class="detail-label">关联 Mod：</span>
+            <div>
+                <div th:if="${mapMods != null and !#lists.isEmpty(mapMods)}" class="mods-list">
+                    <div th:each="mo : ${mapMods}" class="mod-item">
+                        <a th:href="${mo.downloadUrl}" target="_blank" class="mod-link" th:text="${mo.modName}">Mod名称</a>
+                    </div>
+                </div>
+                <p th:unless="${mapMods != null and !#lists.isEmpty(mapMods)}" class="no-mods">暂无关联 Mod</p>
+            </div>
+        </div>
+
+    </div>
+    <div class="form-actions" style="margin-top: 30px;">
+        <a href="/maps" class="btn-cancel">返回列表</a>
+    </div>
+</div>
+
+<footer class="main-footer">
+    <p>© 2025 Minecraft 世界管理平台 | 使用 Spring Boot + Thymeleaf 构建</p>
+</footer>
+
+</body>
+</html>

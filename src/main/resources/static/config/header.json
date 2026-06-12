@@ -1,0 +1,15 @@
+{
+  "logo": {
+    "icon": "⛏️",
+    "text": "MC 世界管理后台",
+    "link": "/"
+  },
+  "navItems": [
+    { "name": "全部地图", "url": "/maps"},
+    { "name": "地图列表", "url": "/maps/download"},
+    { "name": "Mod列表", "url": "/mods"},
+    { "name": "本地存档", "url": "/maps/local"},
+    { "name": "上传地图", "url": "/maps/add"},
+    { "name": "上传Mod", "url": "/mods/add"}
+  ]
+}

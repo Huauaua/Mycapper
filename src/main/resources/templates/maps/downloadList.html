@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MC 世界管理 - 首页</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/script.js"></script>
+</head>
+<body>
+<!-- 头部区域 -->
+<div id="header-container"></div>
+
+<div class="container">
+    <h1>🗺️ Minecraft 世界列表</h1>
+    <a href="/maps/add" class="btn">➕ 上传新地图</a>
+    <!-- 可选：快捷操作按钮已在表格上方提供，但也可以在 header 里已经有“上传新世界” -->
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>地图名称</th>
+                <th>版本</th>
+                <th>简介</th>
+                <th>人数范围</th>
+                <th>文件大小 (MB)</th>
+                <th>上传时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="map : ${maps}">
+                <td th:text="${map.id}">1</td>
+                <td th:text="${map.mapName}">末日城堡</td>
+                <td th:text="${map.version}">1.20</td>
+                <td th:text="${map.description != null ? map.description : '无简介'}">...</td>
+                <td th:text="${map.minPlayers} + ' - ' + ${map.maxPlayers}">1-10</td>
+                <td th:text="${map.fileSize != null ? #numbers.formatDecimal(map.fileSize / 1048576.0, 1, 2) : '0.00'}">0.00</td>
+                <td th:text="${#temporals.format(map.importTime, 'yyyy-MM-dd HH:mm')}">2025-01-01</td>
+                <td>
+                    <a th:href="@{/maps/views/{id}(id=${map.id})}" class="btn-view">查看详情</a>
+                    <a th:href="@{/maps/delete/{id}(id=${map.id})}" class="btn-del"
+                       onclick="return confirm('确定删除该地图吗？')">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 如果没有数据可显示提示 -->
+    <div th:if="${maps.size() == 0}" class="empty-tip">
+        <p>暂无地图数据，点击上方“上传新世界”添加你的第一个地图吧！</p>
+    </div>
+</div>
+
+<!-- 可选页脚 -->
+<footer class="main-footer">
+    <p>© 2025 Minecraft 世界管理平台 | 使用 Spring Boot + Thymeleaf 构建</p>
+</footer>
+</body>
+</html>
