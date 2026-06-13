@@ -4,6 +4,10 @@
 
 ---
 
+<img src="assets/img2.png" alt="MCWorldManager">
+<img src="assets/img.png" alt="MCWorldManager">
+<img src="assets/img_1.png" alt="MCWorldManager">
+
 ## ✨ 功能特性
 
 - 📁 **地图管理**
@@ -74,7 +78,7 @@ src/
 │       └── application.yml        # 配置文件
 └── pom.xml
 ```
-
+<img src="assets/mermaid-diagram-2026-06-13-155844.png" alt="Mermaid Diagram">
 ---
 
 ## 🚀 快速开始
